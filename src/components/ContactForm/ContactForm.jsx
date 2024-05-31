@@ -2,27 +2,27 @@ import css from "../ContactForm/ContactForm.module.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useId } from "react";
-import { nanoid } from "nanoid";
+import { useDispatch } from "react-redux";
+import { addContact } from "../../redux/contactsSlice.js";
 
 const UserSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
-    .required("Required"),
+    .required("Required!"),
 
   number: Yup.string()
     .min(2, "Too Short!")
     .max(50, "Too Long!")
-    .required("Required"),
+    .required("Required!"),
 });
 
-export default function ContactForm({ onAdd }) {
+export default function ContactForm() {
   const fieldId = useId();
+  const dispatch = useDispatch();
 
-  const handleSubmit = (values, actions) => {
-    console.log(values);
-
-    onAdd({ id: nanoid(), ...values });
+  const handleAddContact = (values, actions) => {
+		dispatch(addContact(values));
     actions.resetForm();
   };
 
@@ -30,11 +30,11 @@ export default function ContactForm({ onAdd }) {
     <Formik
       initialValues={{ name: "", number: "" }}
       validationSchema={UserSchema}
-      onSubmit={handleSubmit}
+      onSubmit={handleAddContact}
     >
       <Form className={css.form}>
         <div className={css.formFields}>
-          <label htmlFor={`${fieldId}-name`}>Name</label>
+          <label className={css.formInputLabel} htmlFor={`${fieldId}-name`}>Name</label>
           <Field
             className={css.input}
             type="text"
@@ -45,7 +45,7 @@ export default function ContactForm({ onAdd }) {
         </div>
 
         <div className={css.formFields}>
-          <label htmlFor={`${fieldId}-number`}>Number</label>
+          <label className={css.formInputLabel} htmlFor={`${fieldId}-number`}>Number</label>
           <Field
             className={css.input}
             type="tel"
